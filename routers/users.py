@@ -6,13 +6,14 @@ from jose import JWTError
 from fastapi.security import OAuth2PasswordBearer
 from utils.utils import auth_password,create_access_token,create_refresh_token
 from config.database import conn,cursor
-from dotenv import load_dotenv
 import os
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 # Create router
 router = APIRouter(
@@ -22,9 +23,6 @@ router = APIRouter(
 # Create user
 @router.post("/create_user")
 async def create_user(customer:CustomerBase = Depends()):
-
-    # Store retrieved emails
-    Email = []
     # Hashing Password
     salt = bcrypt.gensalt()
     password = customer.password.encode('utf-8')
@@ -62,8 +60,10 @@ async def create_user(customer:CustomerBase = Depends()):
 
     return "Successfully created"
 
+
+
 @router.post("/login")
-async def login_user(email:str,password:str):  
+async def login(email:str,password:str):  
           
     check_email = """
         SELECT * FROM dim_customers
@@ -78,12 +78,19 @@ async def login_user(email:str,password:str):
                     """
     cursor.execute(check_password,(email,))
     confirmed_password = cursor.fetchone()
-    
+
+    check_user_name = """
+        SELECT first_name FROM dim_customers
+        WHERE email = %s
+                """
+    cursor.execute(check_user_name,(email,))
+    user_name = cursor.fetchone()
+
     if confirmed_email:
         if auth_password(password,confirmed_password["password"]):
             return {
-                "access token": create_access_token(confirmed_email),
-                "refresh_token": create_refresh_token(confirmed_email)
+                "access token": create_access_token(user_name),
+                "refresh_token": create_refresh_token(user_name)
             }
     else:
         return "Wrong email or password"
@@ -98,8 +105,9 @@ def get_current_user(token:str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
-        return credentials_exception
+        raise credentials_exception
 
-@router.get("/users/me")
-def read_users(current_user:str = Depends(get_current_user)):
+@router.get("/me")
+def read_user(current_user:str = Depends(get_current_user)):
     return {"user":current_user}
+

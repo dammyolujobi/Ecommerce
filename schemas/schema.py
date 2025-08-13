@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-
+from typing import Optional
 
 class ProductBase(BaseModel):
     name:str
@@ -64,3 +64,10 @@ class SalesBase(BaseModel):
     dicount:int
     total_amount:int
     status:Status
+
+class CartBase(BaseModel):
+    customer_id:Optional[int] = None 
+    session_id:Optional[int] = None
+    quantity:int
+    product_id:int
+

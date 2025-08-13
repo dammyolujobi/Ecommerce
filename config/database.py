@@ -113,9 +113,26 @@ try:
         FOREIGN KEY(date_id) REFERENCES dim_date(id)
         );         
                    
+    
     ALTER TABLE dim_product ADD COLUMN IF NOT EXISTS product_image BYTEA;
     ALTER TABLE dim_customers ADD COLUMN IF NOT EXISTS password VARCHAR(100);
-  
+    
+    CREATE TABLE IF NOT EXISTS guest_carts(
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(64) NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL,
+        expires_at TIMESTAMP,
+        FOREIGN KEY(product_id) REFERENCES PRODUCT(id)
+                 );
+    CREATE TABLE IF NOT EXISTS user_carts (
+        id SERIAL PRIMARY KEY,
+        customer_id INT NOT NULL,
+        product_id INT NOT NULL,
+        quantity INT NOT NULL,
+        FOREIGN KEY(product_id) REFERENCES dim_product(id),  
+        FOREIGN KEY(customer_id) REFERENCES dim_customer(id)
+                      );
     """
     )
 

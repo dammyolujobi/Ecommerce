@@ -17,7 +17,7 @@ app.include_router(router=router)
 filetypes = ["jpeg","png"]
 
 # Get Products model
-@app.post("/product")
+@app.post("users/add/product")
 async def add_product_values(product: ProductBase = Depends(),file:UploadFile = File(...)):
    try:
     content = await file.read()
