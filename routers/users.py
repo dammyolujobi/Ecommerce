@@ -5,14 +5,17 @@ from jose import jwt
 from jose import JWTError
 from fastapi.security import OAuth2PasswordBearer
 from utils.utils import auth_password,create_access_token,create_refresh_token
-from config.database import conn,cursor
+from models.models import Customer
+from config.database import SessionLocal
 import os
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
+#Initial session
+session = SessionLocal()
 
-
+#
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 # Create router
@@ -23,71 +26,42 @@ router = APIRouter(
 # Create user
 @router.post("/create_user")
 async def create_user(customer:CustomerBase = Depends()):
-    # Hashing Password
-    salt = bcrypt.gensalt()
-    password = customer.password.encode('utf-8')
 
-    hashed_password = bcrypt.hashpw(password,salt).decode('utf-8')
+    password = customer.password.encode('utf-8')
+    hashed_password = bcrypt.hashpw(password,bcrypt.gensalt()).decode('utf-8')
+
     gender = str(customer.gender.value) if hasattr(customer.gender,'value') else str(customer.gender)
 
-    values = ("""
-        INSERT INTO dim_customers(first_name,last_name,email,gender,age,password)
-        VALUES(%s,%s,%s,%s,%s,%s)
-                   """)
-    # Check for existing password in database
-    check = """
-        SELECT * FROM dim_customers
-        WHERE email = %s
-            """
-    cursor.execute(check,(customer.email,))
-    result = cursor.fetchone()
-    if result:
-        return "This user has been registered already"
-    
-    
-
-    params = (
-        customer.first_name,
-        customer.last_name,
-        customer.email,
-        gender,
-        customer.age,
-        hashed_password
+    add_customer = Customer(
+        first_name = customer.first_name,
+        last_name = customer.last_name,
+        email = customer.email,
+        gender = gender,
+        age = customer.age,
+        password = hashed_password
     )
     
-    cursor.execute(values,params)
-    conn.commit()
+    check_email = session.query(Customer).filter(Customer.email == customer.email).first()
+    if check_email:
+        return "This email has been registered already"
+    else:
+        session.commit()
+        session.refresh(add_customer)
 
-    return "Successfully created"
+        return "Successfully created"
 
 
 
 @router.post("/login")
 async def login(email:str,password:str):  
-          
-    check_email = """
-        SELECT * FROM dim_customers
-        WHERE email = %s
-            """
-    cursor.execute(check_email,(email,))
-    confirmed_email = cursor.fetchone()
+    confirmed_user = session.query(Customer).filter(Customer.email == email).first()
 
-    check_password = """
-        SELECT password FROM dim_customers
-        WHERE email = %s
-                    """
-    cursor.execute(check_password,(email,))
-    confirmed_password = cursor.fetchone()
+    confirmed_password = confirmed_user.password
 
-    check_user_name = """
-        SELECT first_name FROM dim_customers
-        WHERE email = %s
-                """
-    cursor.execute(check_user_name,(email,))
-    user_name = cursor.fetchone()
+    user_name = confirmed_user.first_name
 
-    if confirmed_email:
-        if auth_password(password,confirmed_password["password"]):
+    if confirmed_user:
+        if auth_password(password,confirmed_password):
             return {
                 "access token": create_access_token(user_name),
                 "refresh_token": create_refresh_token(user_name)
@@ -106,6 +80,7 @@ def get_current_user(token:str = Depends(oauth2_scheme)):
         return payload
     except JWTError:
         raise credentials_exception
+
 
 @router.get("/me")
 def read_user(current_user:str = Depends(get_current_user)):

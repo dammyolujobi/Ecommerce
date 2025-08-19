@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-from typing import Optional
+from typing import Optional,List
 
 class ProductBase(BaseModel):
     name:str
@@ -8,7 +8,9 @@ class ProductBase(BaseModel):
     price:int
     stock_quantity:int
     category:str
-    subcategory:str
+    sub_category:str
+    discount:float
+    
 
 class Shipping(Enum):
     standard = "standard"
