@@ -67,6 +67,7 @@ DO $$
         carrier_name VARCHAR(200),
         delivery_time_days INT           
                    );
+                   
     CREATE TABLE IF NOT EXISTS dim_store(
         id SERIAL PRIMARY KEY,
         store_name VARCHAR(200),

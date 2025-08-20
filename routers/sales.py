@@ -1,9 +1,9 @@
 from fastapi import APIRouter,Response,Request
-from schemas.schema import CartBase
+from schemas.schema import CartBase,SalesBase
 from routers.users import get_current_user
 from routers.sessions import get_or_create_session_id
 from config.database import SessionLocal
-from models.models import UserCarts,GuestCarts
+from models.models import UserCarts,GuestCarts,Sales
 from datetime import datetime, timedelta,timezone
 router = APIRouter(
     prefix="/user"
@@ -44,5 +44,11 @@ def add_to_cart(cart:CartBase,request:Request,response:Response):
 
         
 
-        
+@router.post("/sales")
+async def sales_detail(sales:SalesBase):
+    
+    add_sales_detail = Sales(**sales.model_dump())
+    session.add(add_sales_detail)
+    session.commit()
+    session.refresh(add_sales_detail)
 
