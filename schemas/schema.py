@@ -10,7 +10,6 @@ class ProductBase(BaseModel):
     category:str
     sub_category:str
     discount:float
-    
 
 class Shipping(Enum):
     standard = "standard"
@@ -22,8 +21,14 @@ class GenderList(Enum):
     female= "female"
 
 class Payment(Enum):
-    credit = "credit_card"
-    transfer = "bank_transfer"
+    card = " Card"
+    bank_account = "Bank Account"
+    mobile_money = "Mobile"
+    opay = "Opay"
+    apple_pay = "Apple Pay"
+    google_pay = "Google Pay"
+    usdd = "USSD"
+    bank_transfer = "Bank Transfer"
 
 class Status(Enum):
     completed = "completed" 
@@ -63,7 +68,7 @@ class SalesBase(BaseModel):
     payment_method:Payment
     quantity:int
     unit_price:int
-    dicount:int
+    discount:int
     total_amount:int
     status:Status
 

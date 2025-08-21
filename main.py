@@ -2,7 +2,7 @@ from fastapi import FastAPI,UploadFile,File,Depends
 from config.database import SessionLocal
 from models.models import Product
 from schemas.schema import ProductBase
-from routers.users import router
+from routers import sales,store,users
 from typing import List
 from sqlalchemy import func
 import os
@@ -15,7 +15,10 @@ load_dotenv()
 app = FastAPI()
 
 
-app.include_router(router=router)
+app.include_router(sales.router)
+app.include_router(store.router)
+app.include_router(users.router)
+
 
 #List of file types
 filetypes = ["jpeg","png"]

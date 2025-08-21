@@ -32,17 +32,6 @@ DO $$
         signup_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP                      
                    );
     
-
-    ALTER TABLE dim_customers
-    ADD COLUMN IF NOT EXISTS sales_id INT;
-
-    ALTER TABLE dim_customers
-    ADD CONSTRAINT fk_sales
-    FOREIGN KEY (sales_id) REFERENCES fact_sales(id);
-
-    
-    
-
     CREATE TABLE IF NOT EXISTS dim_date(
         id SERIAL PRIMARY KEY,
         date VARCHAR(300),
@@ -74,10 +63,11 @@ DO $$
         location VARCHAR(200),
         manager VARCHAR(200)
                    );      
+
     DO $$
     BEGIN
         IF NOT EXISTS(SELECT 1 FROM pg_type WHERE pg_type.typname = 'payment') THEN
-            CREATE TYPE payment AS ENUM('credit_card','cancelled','refunded');
+            CREATE TYPE payment AS ENUM ('Card','Bank Account','Mobile Money','Opay','Apple Pay','Google Pay','USSD','Bank Transfer');
         END IF;
     END
     $$;
