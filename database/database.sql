@@ -63,7 +63,7 @@ DO $$
         location VARCHAR(200),
         manager VARCHAR(200)
                    );      
-
+    
     DO $$
     BEGIN
         IF NOT EXISTS(SELECT 1 FROM pg_type WHERE pg_type.typname = 'payment') THEN
@@ -141,6 +141,7 @@ DO $$
         expires_at TIMESTAMP,
         FOREIGN KEY(product_id) REFERENCES PRODUCT(id)
                  );
+
     CREATE TABLE IF NOT EXISTS user_carts (
         id SERIAL PRIMARY KEY,
         customer_id INT NOT NULL,
@@ -150,3 +151,5 @@ DO $$
         FOREIGN KEY(customer_id) REFERENCES dim_customers(id)
                       );
     
+ALTER TABLE user_carts 
+ADD COLUMN  IF NOT EXISTS customer_id INT;

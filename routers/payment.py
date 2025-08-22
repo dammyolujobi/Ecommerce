@@ -12,12 +12,16 @@ FLW_BASE_URL = 'https://api.flutterwave.cloud/developersandbox'
 
 FLW_ACCESS_TOKEN = os.getenv("FLW_ACCESS_TOKEN")
 
-router = APIRouter(prefix="/payment")
+router = APIRouter(
+    prefix="/payment",
+    tags=["payment"]
+    )
+                  
 
 redirect_url = ""
 
-@router.post("/initiate-payment/")
-def initiate_payment(email:str,amount:int,currency:str):
+def initiate_payment(email:str,amount:float,currency:str = "NGN"):
+
     url = f"{FLW_BASE_URL}/payments"
 
     trans_ref = "txn_" + str(uuid.uuid4())
@@ -50,8 +54,9 @@ def initiate_payment(email:str,amount:int,currency:str):
     
     return response.json
 
-@router.get("/verify-payment")
+@router.get("/payment/{transaction_id}")
 def verify_payment(transaction_id:str):
+
     url = f"{FLW_BASE_URL}/transactions/{transaction_id}/verify_id"
 
     header = {
@@ -64,6 +69,6 @@ def verify_payment(transaction_id:str):
 
     if data["status"] == 'success' and data["data"]["status"] == "successful":
         return {"status":"Payment successful","data":data}
-    
     else:
         return {"status": "Payment failed", "data":data}
+

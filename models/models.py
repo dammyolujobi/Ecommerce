@@ -89,5 +89,5 @@ class UserCarts(Base):
     customer_id = Column(Integer,ForeignKey("dim_customers.id"))
     product_id = Column(Integer,ForeignKey("dim_product.id"))
     quantity = Column(Integer,nullable=False)
-    expires_at = Column(TIMESTAMP(timezone=True),nullable = False)
+    
 

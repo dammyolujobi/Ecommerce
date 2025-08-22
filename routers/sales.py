@@ -17,12 +17,12 @@ def add_to_cart(cart:CartBase,request:Request,response:Response):
     customer_id = get_current_user()
     session_id = get_or_create_session_id(request,response)
     if not cart.customer_id:
-        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        expires_at_time = datetime.now(timezone.utc) + timedelta(days=7)
         add_guest_cart = GuestCarts(
                 product_id = cart.product_id,
                 session_id = session_id,
                 quantity = cart.quantity,
-                expires_at = expires_at
+                expires_at = expires_at_time
         )
 
         session.add(add_guest_cart)
@@ -34,7 +34,7 @@ def add_to_cart(cart:CartBase,request:Request,response:Response):
             customer_id = customer_id,
             product_id = cart.product_id,
             quantity = cart.quantity,
-            expires_at = expires_at
+
         )
         
         session.add(add_cutomer_cart)

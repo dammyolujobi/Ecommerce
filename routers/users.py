@@ -1,9 +1,10 @@
 from fastapi import Depends,APIRouter,HTTPException,status
 from schemas.schema import CustomerBase
 import bcrypt
+from typing import Annotated
 from jose import jwt
 from jose import JWTError
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from utils.utils import auth_password,create_access_token,create_refresh_token
 from models.models import Customer
 from config.database import SessionLocal
@@ -15,12 +16,13 @@ ALGORITHM = os.getenv("ALGORITHM")
 #Initial session
 session = SessionLocal()
 
-#
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 # Create router
 router = APIRouter(
-    prefix="/users"
+    prefix="/users",
+    tags=["users"]
 )
 
 # Create user
@@ -45,44 +47,44 @@ async def create_user(customer:CustomerBase = Depends()):
     if check_email:
         return "This email has been registered already"
     else:
+        session.add(add_customer)
         session.commit()
         session.refresh(add_customer)
 
         return "Successfully created"
 
 
-
 @router.post("/login")
-async def login(email:str,password:str):  
-    confirmed_user = session.query(Customer).filter(Customer.email == email).first()
+async def login(login: Annotated[OAuth2PasswordRequestForm, Depends()]):  
+    confirmed_user = session.query(Customer).filter(Customer.email == login.username).first()
 
     confirmed_password = confirmed_user.password
 
     user_name = confirmed_user.first_name
 
     if confirmed_user:
-        if auth_password(password,confirmed_password):
+        if auth_password(login.password,confirmed_password):
             return {
-                "access token": create_access_token(user_name),
+                "access_token": create_access_token(user_name),
                 "refresh_token": create_refresh_token(user_name)
             }
     else:
         return "Wrong email or password"
 
-def get_current_user(token:str = Depends(oauth2_scheme)):
+@router.post("/get_current_user")
+async def get_current_user(token:str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"}
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        return payload["sub"]
+    
     except JWTError:
         raise credentials_exception
 
 
-@router.get("/me")
-def read_user(current_user:str = Depends(get_current_user)):
-    return {"user":current_user}
+
 
