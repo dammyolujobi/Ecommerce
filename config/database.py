@@ -7,10 +7,14 @@ import os
 load_dotenv()
 
 password =os.getenv("PASSWORD")
-
+port = os.getenv("PORT")
+database = os.getenv("DATABASE")
+username = os.getenv("DB_USERNAME")
+host = os.getenv("HOSTNAME")
 encoded_password = quote_plus(password)
 
-DATABASE_URL = f"postgresql+psycopg2://postgres:{encoded_password}@localhost:5432/E-COMMERCE"
+
+DATABASE_URL = f"postgresql+psycopg2://{username}:{encoded_password}@{host}:{port}/{database}"
 
 engine = create_engine(DATABASE_URL,echo=True)
 
