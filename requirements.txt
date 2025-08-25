@@ -1,5 +1,6 @@
 fastapi
-SQLalchemy
+SQLAlchemy
 google-auth
 uvicorn
 python-dotenv
+psycopg2-binary
