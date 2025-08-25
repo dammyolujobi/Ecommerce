@@ -5,4 +5,4 @@ uvicorn
 python-dotenv
 psycopg2-binary
 bcrypt
-jose
+python-jose
