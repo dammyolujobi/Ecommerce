@@ -90,4 +90,3 @@ class UserCarts(Base):
     product_id = Column(Integer,ForeignKey("dim_product.id"))
     quantity = Column(Integer,nullable=False)
     
-

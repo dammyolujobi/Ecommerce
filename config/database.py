@@ -22,3 +22,4 @@ Base = declarative_base()
 
 SessionLocal = sessionmaker(bind=engine)
 
+Base.metadata.create_all(bind=engine)
