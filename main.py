@@ -5,6 +5,7 @@ from schemas.schema import ProductBase
 from routers import sales,store,users,location,checkout,payment
 from typing import List
 from sqlalchemy import func
+import uvicorn
 import os
 from dotenv import load_dotenv
 from config.google_configuration import upload_for_url
@@ -60,3 +61,6 @@ async def add_product_values(product: ProductBase = Depends(),files: List[Upload
 async def retrieve_products(name:str):
    product = session.query(Product).filter(func.lower(Product.name).like(f"%{name.lower()}%")).all()
    return product
+
+if __name__ == "__main__":
+   uvicorn.run(port=8000,reload=True,app="main:app",host="0.0.0.0")
