@@ -2,3 +2,4 @@ fastapi
 SQLalchemy
 google-auth
 uvicorn
+python-dotenv
