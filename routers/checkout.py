@@ -1,39 +1,53 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,Depends,Request
 from models.models import UserCarts,Product,Customer
 from config.database  import SessionLocal
 from routers.location import get_country
 from routers.payment import initiate_payment,verify_payment
+from routers.users import get_current_user
+import json
 session = SessionLocal()
 
 router = APIRouter(
-    tags=["Checkout"]
+    tags=["checkout"]
 )
 
-
 @router.post("/checkout")
+def checkout(user_name:str = Depends(get_current_user)):
 
-def checkout(user_id:str):
-    cart_info = session.query(UserCarts).filter(UserCarts.customer_id == user_id).first()
+    prod_id_store = []
+    price_store = []
+    discount_store = []
+    discount = 0
+
+    user = session.query(Customer).filter(Customer.first_name == user_name).first()
+
+    user_id  = user.id
+    cart_info = session.query(UserCarts).filter(UserCarts.customer_id == user_id).all()
+
+    # Append product id gotten from cart_info into prod_id_store
+    for cart in range(0,len(cart_info)):
+        prod_id_store.append(cart_info[cart].product_id)
+
+    # Append price and discount gotten from prod_id_store
+    for product_id in prod_id_store:
+        product = session.query(Product).filter(Product.id == product_id).all()
+        for prod in product:
+            price_store.append(prod.price)
+            discount_store.append(prod.discount)
+
     
-    product_id = cart_info.product_id
+    for i in range(0,len(price_store)):
+        discount += discount_store[i] * price_store[i]
 
-    product = session.query(Product).filter(Product.id == product_id).first()
-
-    price_of_prod = product.price
-    discount = product.discount
-
-    user = session.query(Customer).filter(Customer.id == user_id).first()
-
+    discount_price = sum(price_store) - discount
     user_email = user.email
+
+    # Remember to add the if else statement to get the currency
+    currency = "NGN"
+    payment = initiate_payment(user_email,discount_price,currency)
+
+    return payment
     
-    disc_price = discount * price_of_prod
-
-    if get_country == None: 
-        currency = "NGN"
-        initiate_payment(user_email,disc_price,currency)
-
-    else:
-        initiate_payment(user_email,disc_price,get_country)
 
     
 

@@ -151,5 +151,6 @@ DO $$
         FOREIGN KEY(customer_id) REFERENCES dim_customers(id)
                       );
     
-ALTER TABLE user_carts 
-ADD COLUMN  IF NOT EXISTS customer_id INT;
+
+DELETE FROM dim_product
+WHERE id = 1

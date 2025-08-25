@@ -12,7 +12,10 @@ from config.google_configuration import upload_for_url
 load_dotenv()
 
 # Initialized router
-app = FastAPI()
+app = FastAPI(
+   title="E-commerce Api"
+
+)
 
 
 app.include_router(sales.router)

@@ -6,10 +6,9 @@ import requests
 
 load_dotenv()
 
-FLW_BASE_URL = 'https://api.flutterwave.cloud/developersandbox'
+PSK_URL = "https://api.paystack.co/transaction/sk_test_9e162986751fe226fc9a606f1eec62c6cc387c07"
 
-#For production "https://api.flutterwave.com/v3"
-
+PSK_SECRET_KEY = os.getenv("PSK_SECRET_KEY")
 FLW_ACCESS_TOKEN = os.getenv("FLW_ACCESS_TOKEN")
 
 router = APIRouter(
@@ -22,42 +21,33 @@ redirect_url = ""
 
 def initiate_payment(email:str,amount:float,currency:str = "NGN"):
 
-    url = f"{FLW_BASE_URL}/payments"
-
-    trans_ref = "txn_" + str(uuid.uuid4())
+    url = f"{PSK_URL}/initialize"
 
     header = {
-        "Authorization" : f"Bearer{FLW_ACCESS_TOKEN}",
+        "Authorization" : f"Bearer {PSK_SECRET_KEY}",
         "Content-Type" : "application/json",
-        "X-Idempotency-Key" : trans_ref
     }
 
-    payload = {
-        "tx_ref" : "",
-        "amount": str(amount),
-        "currency": currency,
-        "redirect_url" : redirect_url,
+    tr_ref = "tr_ref" + uuid.uuid4()
 
-        "customer" : {
-            "email":email,
-        },
-
-        "customiztions": {
-            "title":"Payment for products"
-        }
+    body = {
+        "email":email,
+        "currency":currency,
+        "reference":str(tr_ref),
+        "amount": amount,
     }
 
-    response = requests.post(url=url,headers=header,json=payload)
-
+    response = requests.post(url=url,headers=header,json=body)
+    
     if response.status_code !=200:
         raise HTTPException(status_code=response.status_code,detail="Payment initializtion failed")
-    
-    return response.json
+    else:
+        return response.json()
 
 @router.get("/payment/{transaction_id}")
 def verify_payment(transaction_id:str):
 
-    url = f"{FLW_BASE_URL}/transactions/{transaction_id}/verify_id"
+    url = f"{PSK_URL}/transactions/{transaction_id}/verify_id"
 
     header = {
         "Authorization": f"Bearer{FLW_ACCESS_TOKEN}"

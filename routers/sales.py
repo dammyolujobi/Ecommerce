@@ -3,25 +3,36 @@ from schemas.schema import CartBase,SalesBase
 from routers.users import get_current_user
 from routers.sessions import get_or_create_session_id
 from config.database import SessionLocal
-from models.models import UserCarts,GuestCarts,Sales
+from models.models import UserCarts,GuestCarts,Sales,Customer
 from datetime import datetime, timedelta,timezone
 router = APIRouter(
-    prefix="/user"
+    prefix="/user",
+    tags=["sales"]
 )
 
 #Initialize session
 session = SessionLocal()
 
+session_id = get_or_create_session_id(Request,Response)
+
 @router.post("/users/product")
-def add_to_cart(cart:CartBase,request:Request,response:Response):
-    customer_id = get_current_user()
-    session_id = get_or_create_session_id(request,response)
-    if not cart.customer_id:
+def add_to_cart(
+                quantity,
+                product_id,
+                user_name:str = Depends(get_current_user)
+                ):
+
+    #Get all user details
+    user = session.query(Customer).filter(Customer.first_name == user_name).first()
+
+    customer_id = user.id
+    
+    if not user_name:
         expires_at_time = datetime.now(timezone.utc) + timedelta(days=7)
         add_guest_cart = GuestCarts(
-                product_id = cart.product_id,
+                product_id = product_id,
                 session_id = session_id,
-                quantity = cart.quantity,
+                quantity = quantity,
                 expires_at = expires_at_time
         )
 
@@ -29,11 +40,11 @@ def add_to_cart(cart:CartBase,request:Request,response:Response):
         session.commit()
         session.refresh(add_guest_cart)
 
-    elif cart.customer_id:
+    elif customer_id:
         add_cutomer_cart = UserCarts(
             customer_id = customer_id,
-            product_id = cart.product_id,
-            quantity = cart.quantity,
+            product_id = product_id,
+            quantity = quantity,
 
         )
         
@@ -41,7 +52,7 @@ def add_to_cart(cart:CartBase,request:Request,response:Response):
         session.commit()
         session.refresh(add_cutomer_cart)
     
-    return cart
+    return add_cutomer_cart
 
 @router.post("/sales")
 async def sales_detail(sales:SalesBase = Depends()):

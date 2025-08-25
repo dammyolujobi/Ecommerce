@@ -6,7 +6,8 @@ from config.database import SessionLocal
 session = SessionLocal()
 
 router = APIRouter(
-    prefix="/company"
+    prefix="/company",
+    tags= ["store"]
 )
 
 @router.post("/store")
