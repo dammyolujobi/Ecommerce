@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 password =os.getenv("PASSWORD")
-port = os.getenv("PORT")
+port = os.getenv("DB_PORT")
 database = os.getenv("DATABASE")
 username = os.getenv("DB_USERNAME")
 host = os.getenv("HOSTNAME")
