@@ -29,7 +29,6 @@ class Customer(Base):
     age = Column(Integer,nullable=False)
     password = Column(String,nullable=False)
     signup_date = Column(DATETIME,nullable = False,default=datetime.now(timezone.utc))
-    sales_id = Column(Integer,ForeignKey("fact_sales.id"))
 
 class Date(Base):
     __tablename__ = "dim_date"
