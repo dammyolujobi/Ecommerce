@@ -6,10 +6,10 @@ router = APIRouter(
 
 #Unfinished for getting the country part
 @router.get("/get_country")
-def get_country(request:Request)->str:
+def get_country(request:Request):
     ip_address = request.client.host
 
-    country = request.get(f"http://ip-api.com/json/{ip_address}")
+    country = request.get(f"http://ip-api.com/json/{str(ip_address)}")
 
     return country
 
