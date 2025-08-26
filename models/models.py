@@ -68,6 +68,7 @@ class Sales(Base):
     date_id = Column(Integer,ForeignKey("dim_date.id"))
     payment_method = Column(Enum(Payment))
     quantity = Column(Integer,nullable=False)
+    sales_status = Column(Enum(Status),nullable = False)
     unit_price = Column(Integer,nullable=False)
     discount = Column(DOUBLE_PRECISION,nullable=False)
     total_amount = Column(DOUBLE_PRECISION,nullable=False)

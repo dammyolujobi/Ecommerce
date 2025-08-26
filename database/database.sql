@@ -27,8 +27,6 @@ DO $$
         gender list_gender,
         age INT,
         password VARCHAR(100),
-        sales_id INT,
-        FOREIGN KEY (sales_id) REFERENCES fact_sales(id),
         signup_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP                      
                    );
     
@@ -90,7 +88,7 @@ DO $$
         unit_price INT,
         discount DOUBLE PRECISION,
         total_amount DOUBLE PRECISION,
-        status sales_status,
+        sales_status status,
         FOREIGN KEY (customer_id) REFERENCES dim_customers(id),
         FOREIGN KEY (product_id) REFERENCES dim_product(id),
         FOREIGN KEY(date_id) REFERENCES dim_date(id)
@@ -139,7 +137,7 @@ DO $$
         product_id INT NOT NULL,
         quantity INT NOT NULL,
         expires_at TIMESTAMP,
-        FOREIGN KEY(product_id) REFERENCES PRODUCT(id)
+        FOREIGN KEY(product_id) REFERENCES dim_product(id)
                  );
 
     CREATE TABLE IF NOT EXISTS user_carts (
@@ -152,5 +150,3 @@ DO $$
                       );
     
 
-DELETE FROM dim_product
-WHERE id = 1
