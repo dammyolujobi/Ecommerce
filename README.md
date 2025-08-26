@@ -1,4 +1,4 @@
-# H1 (CONFIGURE STORAGE FOR GOOGLE DRIVE)
+# (CONFIGURE STORAGE FOR GOOGLE DRIVE)
 
 1. Go to [Google cloud console](https://console.cloud.google.com/welcome?project=ecommerce-470214)
 

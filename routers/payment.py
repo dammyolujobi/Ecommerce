@@ -28,7 +28,7 @@ def initiate_payment(email:str,amount:float,currency:str = "NGN"):
         "Content-Type" : "application/json",
     }
 
-    tr_ref = "tr_ref" + uuid.uuid4()
+    tr_ref = "tr_ref" + str(uuid.uuid4())
 
     body = {
         "email":email,
