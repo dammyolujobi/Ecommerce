@@ -1,10 +1,17 @@
-from fastapi import APIRouter,Depends,Request
+from fastapi import APIRouter,Depends
 from models.models import UserCarts,Product,Customer
 from config.database  import SessionLocal
-from routers.location import get_country
-from routers.payment import initiate_payment,verify_payment
+from routers.payment import initiate_payment
 from routers.users import get_current_user
-import json
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+PSK_URL = f"https://api.paystack.co/transaction"
+PSK_SECRET_KEY = os.getenv("PSK_SECRET_KEY")
+
 session = SessionLocal()
 
 router = APIRouter(
@@ -12,7 +19,7 @@ router = APIRouter(
 )
 
 @router.post("/checkout")
-def checkout(user_name:str = Depends(get_current_user)):
+async def checkout(user_name:str = Depends(get_current_user)):
 
     prod_id_store = []
     price_store = []
@@ -45,9 +52,25 @@ def checkout(user_name:str = Depends(get_current_user)):
     # Remember to add the if else statement to get the currency
     currency = "NGN"
     payment = initiate_payment(user_email,discount_price,currency)
+    return payment["reference"]
 
-    return payment
+@router.get("/verify payment")
+async def verify_payment(transaction_id:str = Depends(checkout)):
+    verify_info = {}
+    url = f"{PSK_URL}/verify/{transaction_id} "
+
+    header = {
+        "Authorization": f"Bearer {PSK_SECRET_KEY}"
+    }
+
+    response = requests.get(url=url,headers=header)
     
+    verify_info.update(response.json())
+    
+    if verify_info["status"] is True and verify_info["message"] == "Verification successful":
+        return {"status":"Payment successful","data":verify_info}
+    else:
+        return {"status": "Payment failed", "data":verify_info}
 
     
 

@@ -1,18 +1,19 @@
 from fastapi import APIRouter,Request
+import requests
 
 router = APIRouter(
     tags=["location"]
 )
 
 #Unfinished for getting the country part
-@router.get("/get_country")
-def get_country(request:Request):
-    ip_address = request.client.host
 
-    country = request.get(f"http://ip-api.com/json/{str(ip_address)}")
+def get_country():
+    country = {}
+    request = requests.get("http://ipinfo.io/json")
+    country.update(request.json())
+    return country["country"]
 
-    return country
-
-
+country = requests.get("http://ipinfo.io/json")
+print(country.json())
 
 

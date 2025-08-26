@@ -2,7 +2,7 @@ from fastapi import FastAPI,UploadFile,File,Depends
 from config.database import SessionLocal
 from models.models import Product
 from schemas.schema import ProductBase
-from routers import sales,store,users,location,checkout,payment
+from routers import checkout, sales,store,users,location,payment
 from typing import List
 from sqlalchemy import func
 import uvicorn
