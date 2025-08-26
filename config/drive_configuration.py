@@ -7,9 +7,6 @@ import shutil
 from fastapi import File,UploadFile,Depends
 
 
-# Path to your service account key file
-SERVICE_ACCOUNT_FILE = "service_account.json"
-
 # Drive API scopes
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 
@@ -19,6 +16,7 @@ service = build("drive", "v3", credentials=creds)
 
 async def upload_for_url(file_detail:UploadFile = File(...), folder_id:str = Depends())->str:
     try:
+        
         with tempfile.NamedTemporaryFile(delete=False,suffix=file_detail.filename) as tmp:
             shutil.copyfileobj(file_detail.file, tmp)
             temp_path = tmp.name

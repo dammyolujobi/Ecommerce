@@ -8,7 +8,8 @@ from sqlalchemy import func
 import uvicorn
 import os
 from dotenv import load_dotenv
-from config.google_configuration import upload_for_url
+from config.drive_configuration import upload_for_url
+from config.get_drive_id_for_folder import create_folder
 
 load_dotenv()
 
@@ -33,7 +34,7 @@ filetypes = ["jpeg","png"]
 session = SessionLocal()
 
 #Get the google folder id for uploading
-folder_id = os.getenv("FOLDER_ID")
+folder_id = create_folder()
 
 
 @app.post("/users/add/product")
@@ -41,6 +42,7 @@ async def add_product_values(product: ProductBase = Depends(),files: List[Upload
    file_urls = [] # Store for urls
    
    for file in files:
+
       file_url =  await upload_for_url(file,folder_id=folder_id)
       file_urls.append(file_url)
 

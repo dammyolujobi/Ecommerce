@@ -1,4 +1,4 @@
-from google_configuration import service
+from config.drive_configuration import service
 from googleapiclient.http import HttpError
 
 def create_folder():
@@ -15,7 +15,7 @@ def create_folder():
 
       # Check for existing folder with the given nam
       check = service.files().list(
-        q=f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+        q= f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
         fields="files(id, name)"
         ).execute()
       
@@ -32,4 +32,3 @@ def create_folder():
     except HttpError as e:
        print(e.error_details)
 
-create_folder()
