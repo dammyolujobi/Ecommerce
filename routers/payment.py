@@ -40,7 +40,7 @@ def initiate_payment(email:str,amount:float,currency:str = "NGN"):
     response = requests.post(url=url,headers=header,json=body)
     
     if response.status_code !=200:
-        raise HTTPException(status_code=response.status_code,detail="Payment initializtion failed")
+        raise HTTPException(status_code=response.status_code,detail="Payment initialization failed")
     else:
         return response.json()
 

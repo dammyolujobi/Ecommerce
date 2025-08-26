@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 from config.drive_configuration import upload_for_url
 from config.get_drive_id_for_folder import create_folder
+from routers.users import oauth2_scheme
 
 load_dotenv()
 
@@ -38,7 +39,7 @@ folder_id = create_folder()
 
 
 @app.post("/users/add/product")
-async def add_product_values(product: ProductBase = Depends(),files: List[UploadFile] = File(...)):
+async def add_product_values(product: ProductBase = Depends(),files: List[UploadFile] = File(...),authenticate:str = Depends(oauth2_scheme)):
    file_urls = [] # Store for urls
    
    for file in files:
