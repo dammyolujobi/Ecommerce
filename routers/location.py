@@ -28,10 +28,9 @@ def get_country():
     country = requests.get(f"https://api.ipinfo.io/lite/{ip_address}?token={LOCATION_API_KEY}")
     country_info.update(country.json())
 
-    #Return the country
     return country_info["country"]
 
-def get_country_currency():
+def get_country_currency()->str:
     data = {}
 
     with open("routers/country_list.json","r") as f:
@@ -43,5 +42,13 @@ def get_country_currency():
         if current_country.lower() != country["country"].lower():
             pass
         else:
-            print(country["country"],country["currency"])
+            return country["currency"]
                 
+def get_exchange_rate(against_curr):
+    exchange_rate = {}
+
+    response = requests.get(f"https://v6.exchangerate-api.com/v6/{CURRENCY_API_KEY}/latest/{get_country_currency()}")
+    exchange_rate.update(response.json())   
+
+    result = exchange_rate["conversion_rates"].get(against_curr)
+    return result

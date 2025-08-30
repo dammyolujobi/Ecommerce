@@ -22,13 +22,12 @@ def create_folder():
       item = check.get('files',[])
 
       if item:
-          return "Folder already exists"
+          print("Folder already exists")
       
       else:
         file = service.files().create(body=file_metadata, fields="id").execute()
         
-        return file.get("id")
+        print(file.get("id"))
 
     except HttpError as e:
-        return e.error_details
-
+       print(e.error_details)

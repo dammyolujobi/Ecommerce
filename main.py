@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from config.drive_configuration import upload_for_url
 from config.get_drive_id_for_folder import create_folder
 from routers.users import oauth2_scheme
+from routers.location import get_country_currency
 
 load_dotenv()
 
@@ -39,7 +40,18 @@ folder_id = create_folder()
 
 
 @app.post("/users/add/product")
-async def add_product_values(product: ProductBase = Depends(),files: List[UploadFile] = File(...),authenticate:str = Depends(oauth2_scheme)):
+async def add_product_values(name,
+                             brand,
+                             price,
+                             stock_quantity,
+                             category,
+                             sub_category,
+                              discount,
+                             files: List[UploadFile] = File(...),
+                             authenticate:str = Depends(oauth2_scheme),
+                             ):
+   
+   currency = get_country_currency()
    file_urls = [] # Store for urls
    
    for file in files:
@@ -48,8 +60,15 @@ async def add_product_values(product: ProductBase = Depends(),files: List[Upload
       file_urls.append(file_url)
 
    try:
-      add_product = Product(**product.model_dump(),
-                            product_image_url = file_urls)
+      add_product = Product(name= name,
+                            brand = brand,
+                            price = price,
+                            stock_quantity= stock_quantity,
+                            category = category,
+                            sub_category = sub_category,
+                            discount = discount,
+                            product_image_url = file_urls,
+                            currency = currency)
       
       session.add(add_product)
       session.commit()
@@ -62,6 +81,7 @@ async def add_product_values(product: ProductBase = Depends(),files: List[Upload
 
 @app.get("/retrieve-products")
 async def retrieve_products(name:str):
+
    product = session.query(Product).filter(func.lower(Product.name).like(f"%{name.lower()}%")).all()
    return product
 

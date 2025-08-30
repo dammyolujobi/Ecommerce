@@ -10,6 +10,7 @@ class ProductBase(BaseModel):
     category:str
     sub_category:str
     discount:float
+    currency:str
 
 class Shipping(Enum):
     standard = "standard"

@@ -26,7 +26,7 @@ async def upload_for_url(file_detail:UploadFile = File(...), folder_id:str = Dep
             "name": file_detail.filename,
             "parents":[folder_id]
             }
-
+    
         media = MediaFileUpload(
             temp_path,
             mimetype=mime,
@@ -38,6 +38,7 @@ async def upload_for_url(file_detail:UploadFile = File(...), folder_id:str = Dep
         )
 
         file_id = file["id"]
+        
         
         return f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
 

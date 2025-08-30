@@ -14,6 +14,7 @@ class Product(Base):
     stock_quantity = Column(Integer,nullable=False)
     category = Column(String,nullable=False)
     sub_category = Column(String,nullable=True)
+    currency = Column(String,nullable=False)
     discount = Column(DOUBLE_PRECISION,nullable=True)
     product_image_url = Column(ARRAY(String),nullable=False)
     date_added = Column(DATETIME,nullable=False,default=datetime.now(timezone.utc))

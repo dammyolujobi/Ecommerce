@@ -16,6 +16,7 @@ DO $$
         sub_category VARCHAR(200),
         discount DOUBLE PRECISION,
         product_image_url TEXT[] NOT NULL,
+        currency VARCHAR(100),
         date_added TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                    );
 
