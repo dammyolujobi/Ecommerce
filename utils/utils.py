@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Set up access tokens
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 ALGORITHM = os.getenv("ALGORITHM")
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")

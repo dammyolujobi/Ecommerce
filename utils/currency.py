@@ -44,7 +44,7 @@ def get_country_currency()->str:
         else:
             return country["currency"]
                 
-def get_exchange_rate(against_curr):
+def get_exchange_rate(against_curr:str):
     exchange_rate = {}
 
     response = requests.get(f"https://v6.exchangerate-api.com/v6/{CURRENCY_API_KEY}/latest/{get_country_currency()}")
