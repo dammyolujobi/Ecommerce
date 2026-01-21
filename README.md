@@ -188,7 +188,7 @@ google-api-python-client
 
 ## License
 
-[Add your license here]
+MIT License
 
 ## Support
 
