@@ -1,15 +1,13 @@
-from fastapi import FastAPI,UploadFile,File,Depends
+from fastapi import FastAPI,UploadFile,File
 from config.database import SessionLocal
 from models.models import Product
 from routers import checkout, home, sales,store,users,payment
 from typing import List
-from enum import Enum
 from sqlalchemy import func
 import uvicorn
 from dotenv import load_dotenv
 from config.drive_configuration import upload_for_url
 from config.get_drive_id_for_folder import create_folder
-from routers.users import oauth2_scheme
 from utils.currency import get_country_currency
 from utils import currency
 

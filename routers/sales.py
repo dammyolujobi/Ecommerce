@@ -5,6 +5,7 @@ from routers.sessions import get_or_create_session_id
 from config.database import SessionLocal
 from models.models import UserCarts,GuestCarts,Sales,Customer
 from datetime import datetime, timedelta,timezone
+
 router = APIRouter(
     prefix="/user",
     tags=["sales"]
@@ -26,7 +27,7 @@ def add_to_cart(
     user = session.query(Customer).filter(Customer.first_name == user_name).first()
 
     customer_id = user.id
-    
+
     if not user_name:
         expires_at_time = datetime.now(timezone.utc) + timedelta(days=7)
         add_guest_cart = GuestCarts(

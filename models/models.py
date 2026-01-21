@@ -17,6 +17,7 @@ class Product(Base):
     currency = Column(String,nullable=False)
     discount = Column(DOUBLE_PRECISION,nullable=True)
     product_image_url = Column(ARRAY(String),nullable=False)
+    quantity_sold = Column(Integer,nullable=True)
     date_added = Column(DATETIME,nullable=False,default=datetime.now(timezone.utc))
 
 class Customer(Base):
@@ -66,7 +67,7 @@ class Sales(Base):
     customer_id = Column(Integer,ForeignKey("dim_customer.id"))
     product_id = Column(Integer,ForeignKey("dim_product.id"))
     date_id = Column(Integer,ForeignKey("dim_date.id"))
-    payment_method = Column(Enum(Payment))
+    payment_method = Column(Enum(Payment),nullable = False)
     quantity = Column(Integer,nullable=False)
     sales_status = Column(Enum(Status),nullable = False)
     unit_price = Column(Integer,nullable=False)

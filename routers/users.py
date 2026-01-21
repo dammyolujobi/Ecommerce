@@ -57,7 +57,7 @@ async def create_user(customer:CustomerBase = Depends()):
 @router.post("/login")
 async def login(login: Annotated[OAuth2PasswordRequestForm, Depends()]):  
     confirmed_user = session.query(Customer).filter(Customer.email == login.username).first()
-
+    
     confirmed_password = confirmed_user.password
 
     user_name = confirmed_user.first_name

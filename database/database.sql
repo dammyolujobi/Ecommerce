@@ -17,8 +17,11 @@ DO $$
         discount DOUBLE PRECISION,
         product_image_url TEXT[] NOT NULL,
         currency VARCHAR(100),
+        quantity_sold INT,
         date_added TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                    );
+
+    ALTER TABLE dim_product ADD IF NOT EXISTS quantity_sold INT;
 
     CREATE TABLE IF NOT EXISTS dim_customers(
         id SERIAL PRIMARY KEY,
@@ -28,7 +31,7 @@ DO $$
         gender list_gender,
         age INT,
         password VARCHAR(100),
-        signup_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP                      
+        signup_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP                 
                    );
     
     CREATE TABLE IF NOT EXISTS dim_date(
@@ -94,6 +97,7 @@ DO $$
         FOREIGN KEY (product_id) REFERENCES dim_product(id),
         FOREIGN KEY(date_id) REFERENCES dim_date(id)
         );         
+
     -- Trigger function to copy discount from dim_product on insert             
     CREATE OR REPLACE FUNCTION set_discount_from_product()
     RETURNS TRIGGER AS $$
@@ -149,5 +153,3 @@ DO $$
         FOREIGN KEY(product_id) REFERENCES dim_product(id),  
         FOREIGN KEY(customer_id) REFERENCES dim_customers(id)
                       );
-    
-

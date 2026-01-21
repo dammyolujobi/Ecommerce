@@ -1,5 +1,4 @@
 #using .env variables for client and secret.
-
 import os
 import requests
 from datetime import datetime, timedelta
@@ -63,7 +62,3 @@ if __name__ == "__main__":
     auth = AuthManager()
     token = auth.get_access_token()
     print("Access Token:", token)
-
-
-
-
