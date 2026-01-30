@@ -81,6 +81,13 @@ async def checkout(user_name:str = Depends(get_current_user)):
     verify_info.update(response.json())
     
     if verify_info["status"] is True and verify_info["message"] == "Verification successful":
+        session.add(
+            product_quantity = prod.quantity_sold
+        )
+        session.refresh(
+            product_quantity = prod.quantity_sold
+        )
+        
         session.commit()
         return {"status":"Payment successful","data":verify_info}
     else:

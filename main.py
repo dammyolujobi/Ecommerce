@@ -4,12 +4,15 @@ from models.models import Product
 from routers import checkout, home, sales,store,users,payment
 from typing import List
 from sqlalchemy import func
+from fastapi.staticfiles import StaticFiles
 import uvicorn
+import os
 from dotenv import load_dotenv
 from config.drive_configuration import upload_for_url
 from config.get_drive_id_for_folder import create_folder
 from utils.currency import get_country_currency
 from utils import currency
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -28,6 +31,17 @@ app.include_router(checkout.router)
 app.include_router(payment.router)
 app.include_router(home.router)
 
+
+app.add_middleware(
+   CORSMiddleware,
+   allow_origins = ["http://localhost:5173"],
+   allow_credentials = True,
+   allow_methods = ["*"],
+   allow_headers = ["*"]
+)
+
+app.mount("/images",StaticFiles(directory="images"),name="images")
+
 #List of file types
 filetypes = ["jpeg","png"]
 
@@ -37,6 +51,7 @@ session = SessionLocal()
 #Get the google folder id for uploading
 folder_id = create_folder()
 
+UPLOAD_DIR = "images"
 
 @app.post("/users/add/product")
 async def add_product_values(name,
@@ -54,7 +69,12 @@ async def add_product_values(name,
    
    for file in files:
 
-      file_url =  await upload_for_url(file,folder_id=folder_id)
+      file_path = os.path.join(UPLOAD_DIR,file.filename)
+
+      with open(file_path,"wb") as f:
+         f.write(await file.read())
+
+      file_url =  f"http://localhost:8000/images/{file.filename}"
       file_urls.append(file_url)
 
    try:

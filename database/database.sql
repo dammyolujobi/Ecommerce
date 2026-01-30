@@ -22,7 +22,7 @@ DO $$
                    );
 
     ALTER TABLE dim_product ADD IF NOT EXISTS quantity_sold INT;
-
+    
     CREATE TABLE IF NOT EXISTS dim_customers(
         id SERIAL PRIMARY KEY,
         first_name VARCHAR(300),
